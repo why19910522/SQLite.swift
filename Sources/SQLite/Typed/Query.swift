@@ -913,6 +913,16 @@ public struct RowIterator: FailableIterator {
         }
         return elements
     }
+    
+    public func compactMap<T>(_ transform: (Element) throws -> T?) throws -> [T] {
+        var elements = [T]()
+        while let row = try failableNext(),
+            let element = try transform(row) {
+            elements.append(element)
+        }
+        return elements
+    }
+
 }
 
 extension Connection {
@@ -1109,12 +1119,20 @@ public struct Row {
         return valueAtIndex(idx)
     }
 
-    public subscript<T : Value>(column: Expression<T>) -> T {
-        return try! get(column)
+    public subscript<T : Value>(column: Expression<T>) -> T? {
+        do {
+            return try get(column)
+        } catch {
+            return nil
+        }
     }
 
     public subscript<T : Value>(column: Expression<T?>) -> T? {
-        return try! get(column)
+        do {
+            return try get(column)
+        } catch {
+            return nil
+        }
     }
 }
 

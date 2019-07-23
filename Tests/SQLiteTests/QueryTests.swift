@@ -404,7 +404,7 @@ class QueryIntegrationTests : SQLiteTestCase {
         try! InsertUsers(names)
 
         let emailColumn = Expression<String>("email")
-        let emails = try! db.prepareRowIterator(users).map { $0[emailColumn] }
+        let emails = try! db.prepareRowIterator(users).compactMap { $0[emailColumn] }
 
         XCTAssertEqual(names.map({ "\($0)@example.com" }), emails.sorted())
     }
